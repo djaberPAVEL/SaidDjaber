@@ -1,7 +1,7 @@
 import { useState } from "react";
 import IncDec from "./IncDec.comoponet";
 
-function Calulator() {
+function Calulator() {``
   const [products, setProducts] = useState([
     { name: "Hara", quantity: 3, price: 10,resulat:0},
     { name: "Tomato", quantity: 8, price: 20,resulat:0 },
@@ -17,13 +17,7 @@ function Calulator() {
       )
     );
 
-    setProducts(
-      products.map((product) =>
-        product.name === prop.name
-          ? { ...product, resulat: product.quantity* product.price }
-          : product
-      )
-    );
+    
   };
   const onDecQuantity = (pro: any) => {
     setProducts(
