@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
-import './App.css'
-import Calulator from './Product/Calculation/Calulator.component'
-import Product from './Product/ProductProp'
-import Mangment from './Product/Mangment/Mangment.component'
+import  { useEffect, useState } from 'react'
 
+function ProductProvider() {
 
-
-function App() {
-  
+    
   const [products, setProducts] = useState([
     { name: "Hara", quantity: 3, price: 10, result: 3 * 10 },
     { name: "Tomato", quantity: 8, price: 20,result:0 },
@@ -24,22 +19,22 @@ function App() {
     setTotalResult(calculatedTotal);
 }, [products]); 
 
-  const onIncQuantity = (productItem: Product) => {
+  const onIncQuantity = (prop: any) => {
 
     setProducts(
       products.map((product) =>
-        product.name === productItem.name
+        product.name === prop.name
           ? { ...product, quantity: product.quantity + 1,result:(product.price )* (product.quantity+1) }
           : product
       )
     );
     
   };
-  const onDecQuantity = (productItem: Product) => {
+  const onDecQuantity = (pro: any) => {
 
     setProducts(
       products.map((product) =>
-        product.name === productItem.name
+        product.name === pro.name
           ? { ...product, quantity: product.quantity - 1, result:(product.price )* (product.quantity-1) }
           : product
       )
@@ -48,21 +43,21 @@ function App() {
   };
   //price
 
-  const onIncPrice = (productItem: Product) => {
+  const onIncPrice = (prop: any) => {
     
     setProducts(
       products.map((product) =>
-      product.name === productItem.name
+      product.name === prop.name
       ? { ...product, price: product.price + 1, result:(product.price +1)* product.quantity }
       : product
       )
       );
 
   };
-  const onDecPrice = (productItem: Product) => {
+  const onDecPrice = (pro: any) => {
     setProducts(
       products.map((product) =>
-      product.name === productItem.name
+      product.name === pro.name
       ? { ...product, price: product.price - 1, result:(product.price -1)* product.quantity }
       : product
       )
@@ -70,19 +65,11 @@ function App() {
 
   };
 
+
+
   return (
-    <>
-      <Calulator
-        products={products}
-        onDecQuantity={(product)=>onDecQuantity(product)}
-        onIncPrice={(product)=>onIncPrice(product)}
-        onDecPrice={(product)=>onDecPrice(product)}
-        onIncQuantity={(product)=>onIncQuantity(product)}
-        totalResult={totalResult}
-      />
-    {/* <Mangment/>  */}
-    </>
+    <div>ProductProvider</div>
   )
 }
 
-export default App
+export default ProductProvider

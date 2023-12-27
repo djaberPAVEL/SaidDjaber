@@ -1,78 +1,18 @@
-import { useEffect, useState } from "react";
 import IncDec from "./IncDec.comoponet";
+import Product from "../ProductProp";
 
-function Calulator() {
-  const [products, setProducts] = useState([
-    { name: "Hara", quantity: 3, price: 10, result: 3 * 10 },
-    { name: "Tomato", quantity: 8, price: 20, result: 0 },
-    { name: "cofe", quantity: 0, price: 90, result: 0 },
-  ]);
+interface Props {
+        products:Product []
+        onIncQuantity:(arg:Product)=>void
+        onDecQuantity:(arg:Product)=>void
+        onIncPrice:(arg:Product)=>void
+        onDecPrice:(arg:Product)=>void
+        totalResult:number
+}
 
-  const [totalResult, setTotalResult] = useState(0);
-
-  useEffect(() => {
-    let calculatedTotal = products.reduce((acc, product) => {
-      return acc + product.result;
-    }, 0);
-
-    setTotalResult(calculatedTotal);
-  }, [products]);
-
-  const onIncQuantity = (prop: any) => {
-    setProducts(
-      products.map((product) =>
-        product.name === prop.name
-          ? {
-              ...product,
-              quantity: product.quantity + 1,
-              result: product.price * (product.quantity + 1),
-            }
-          : product
-      )
-    );
-  };
-  const onDecQuantity = (pro: any) => {
-    setProducts(
-      products.map((product) =>
-        product.name === pro.name
-          ? {
-              ...product,
-              quantity: product.quantity - 1,
-              result: product.price * (product.quantity - 1),
-            }
-          : product
-      )
-    );
-  };
-  //price
-
-  const onIncPrice = (prop: any) => {
-    setProducts(
-      products.map((product) =>
-        product.name === prop.name
-          ? {
-              ...product,
-              price: product.price + 1,
-              result: (product.price + 1) * product.quantity,
-            }
-          : product
-      )
-    );
-  };
-  const onDecPrice = (pro: any) => {
-    setProducts(
-      products.map((product) =>
-        product.name === pro.name
-          ? {
-              ...product,
-              price: product.price - 1,
-              result: (product.price - 1) * product.quantity,
-            }
-          : product
-      )
-    );
-  };
-
+function Calulator({products,onIncQuantity,onIncPrice,onDecQuantity,totalResult,onDecPrice}:Props) {
+ 
+ 
   return (
     <table className="table table-bordered border-primary">
       <thead>
@@ -84,35 +24,35 @@ function Calulator() {
         </tr>
       </thead>
       <tbody>
-        {products.map((prdu) => (
-          <tr key={prdu.name}>
-            <th scope="row">{prdu.name}</th>
+        {products.map((prduct) => (
+          <tr key={prduct.name}>
+            <th scope="row">{prduct.name}</th>
             <td>
               <IncDec
-                onInc={() => onIncQuantity(prdu)}
-                onDes={() => onDecQuantity(prdu)}
-                number={prdu.quantity}
+                onInc={() => onIncQuantity(prduct)}
+                onDes={() => onDecQuantity(prduct)}
+                number={prduct.quantity}
               />
             </td>
             <td>
               <IncDec
-                onInc={() => onIncPrice(prdu)}
-                onDes={() => onDecPrice(prdu)}
-                number={prdu.price}
+                onInc={() => onIncPrice(prduct)}
+                onDes={() => onDecPrice(prduct)}
+                number={prduct.price}
               />
             </td>
-            <td>{prdu.result}</td>
+            <td >{prduct.result}</td>
           </tr>
         ))}
       </tbody>
-      <tfoot>
-        <tr>
-          <th>Total Resulat</th>
-          <th scope="row" colSpan={3}>
+        <tfoot>
+            <tr>
+                <th>Total Resulat</th>
+            <th scope="row" colSpan={3}>
             {totalResult}
-          </th>
-        </tr>
-      </tfoot>
+            </th>
+            </tr>
+        </tfoot>
     </table>
   );
 }
