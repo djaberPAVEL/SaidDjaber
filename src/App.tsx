@@ -76,14 +76,14 @@ function App() {
 
   return (
     <>
-      {/* <Calulator
+      {<Calulator
         products={products}
         onDecQuantity={(product)=>onDecQuantity(product)}
         onIncPrice={(product)=>onIncPrice(product)}
         onDecPrice={(product)=>onDecPrice(product)}
         onIncQuantity={(product)=>onIncQuantity(product)}
         totalResult={totalResult}
-      /> */}
+      /> }
     <Mangment
      products={products}
      onIncPrice={(product)=>onIncPrice(product)}
