@@ -2,18 +2,24 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import { NewProduct } from "../ProductProp";
 
-interface NewProduct {
-  name: string;
-  price: number;
-}
 
 interface Prop {
   onCreate: (arg: NewProduct) => void;
+  name?:string,
+  price?:number,
+  id?:number,
+  buttonName:string,
+  heading:string
 }
 
-function ModelProduct({ onCreate }: Prop) {
-  const [object, setObject] = useState({ name: "", price: 0 });
+function ModelProduct({ onCreate,name,price,buttonName,heading,id }: Prop) {
+  const [object, setObject] = useState({ 
+    id: id ? id:999789,
+    name: name ? name:'', 
+    defaultPrice:price?price:0 
+});
 
   const [show, setShow] = useState(false);
   const handleSave = () => {
@@ -26,12 +32,12 @@ function ModelProduct({ onCreate }: Prop) {
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
-        Add new product
+        {buttonName}
       </Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Creat new product</Modal.Title>
+          <Modal.Title>{heading}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -53,10 +59,11 @@ function ModelProduct({ onCreate }: Prop) {
                 onChange={(event) =>
                   setObject({
                     ...object,
-                    price: parseFloat(event.target.value),
+                    defaultPrice: parseFloat(event.target.value),
                   })
                 }
-                value={object.price}
+                
+                value={object.defaultPrice}
               />
             </Form.Group>
           </Form>
