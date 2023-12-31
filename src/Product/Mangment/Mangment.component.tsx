@@ -44,7 +44,7 @@ function Mangment({products,onIncPrice,onDecPrice,onAddProduct,onUpdateProduct,o
              heading="Modifiy the product"
              />
 
-            <button onClick={()=>onDeleteProduct(product)} className="btn btn-danger">Delete</button>
+            <button onClick={()=>onDeleteProduct(product)} className="btn btn-outline-danger">Delete</button>
             </td>
         </tr>
       ))}

@@ -5,6 +5,8 @@ import { NewProduct, Product } from "./Product/ProductProp";
 import Mangment from "./Product/Mangment/Mangment.component";
 import Navbar from "./Navbar/Navbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./Home";
+import NotFound from "./NotFound";
 
 function App() {
   const [products, setProducts] = useState([
@@ -137,36 +139,40 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar></Navbar>
         <Routes>
-          <Route path="/" element="" />
-          <Route
-            path="/calculate"
-            element={
-              <Calulator
-                products={products}
-                onDecQuantity={(product) => onDecQuantity(product)}
-                onIncPrice={(product) => onIncPrice(product)}
-                onDecPrice={(product) => onDecPrice(product)}
-                onIncQuantity={(product) => onIncQuantity(product)}
-                totalResult={totalResult}
-              />
-            }
-          />
+          <Route path="/" element={<Navbar></Navbar>}>
+            <Route path="/" element={<Home></Home>} />
+            <Route
+              path="calculate"
+              element={
+                <Calulator
+                  products={products}
+                  onDecQuantity={(product) => onDecQuantity(product)}
+                  onIncPrice={(product) => onIncPrice(product)}
+                  onDecPrice={(product) => onDecPrice(product)}
+                  onIncQuantity={(product) => onIncQuantity(product)}
+                  totalResult={totalResult}
+                />
+              }
+            />
 
-          <Route
-            path="/mangment"
-            element={
-              <Mangment
-                products={products}
-                onIncPrice={(product) => onIncPrice(product)}
-                onDecPrice={(product) => onDecPrice(product)}
-                onAddProduct={(product: any) => onAddProduct(product)}
-                onUpdateProduct={(product: any) => onUpdateProduct(product)}
-                onDeleteProduct={(product: any) => onDeleteProduct(product)}
-              />
-            }
-          />
+            <Route
+              path="mangment"
+              element={
+                <Mangment
+                  products={products}
+                  onIncPrice={(product) => onIncPrice(product)}
+                  onDecPrice={(product) => onDecPrice(product)}
+                  onAddProduct={(product: any) => onAddProduct(product)}
+                  onUpdateProduct={(product: any) => onUpdateProduct(product)}
+                  onDeleteProduct={(product: any) => onDeleteProduct(product)}
+                />
+              }
+            />
+            <Route path='*' element={<NotFound></NotFound>}>
+
+            </Route>
+          </Route>
         </Routes>
       </BrowserRouter>
       {/* {<Calulator
