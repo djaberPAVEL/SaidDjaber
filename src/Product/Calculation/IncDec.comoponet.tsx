@@ -7,11 +7,11 @@ interface Props {
 function IncDec({ onDes, onInc, number }: Props) {
   return (
     <>
-      <button className="btn btn-danger" onClick={onDes}>
+      <button className="btn btn-outline-warning" onClick={onDes}>
         -
       </button>
       <span>{number}</span>
-      <button className="btn btn-secondary" onClick={onInc}>
+      <button className="btn btn-outline-success" onClick={onInc}>
         +
       </button>
     </>

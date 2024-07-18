@@ -31,7 +31,7 @@ function ModelProduct({ onCreate,name,price,buttonName,heading,id }: Prop) {
   const handleShow = () => setShow(true);
   return (
     <>
-      <Button variant="primary mx-1" onClick={handleShow}>
+      <Button variant="btn btn-outline-secondary mx-1" onClick={handleShow}>
         {buttonName}
       </Button>
 
