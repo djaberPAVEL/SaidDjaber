@@ -1,5 +1,5 @@
 import IncDec from "./IncDec.comoponet";
-import Product from "../ProductProp";
+import {Product} from "../ProductProp";
 
 interface Props {
         products:Product []
@@ -7,6 +7,7 @@ interface Props {
         onDecQuantity:(arg:Product)=>void
         onIncPrice:(arg:Product)=>void
         onDecPrice:(arg:Product)=>void
+        
         totalResult:number
 }
 

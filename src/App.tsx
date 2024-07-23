@@ -7,8 +7,46 @@ import Navbar from "./Navbar/Navbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import NotFound from "./NotFound";
+import axios from "axios";
+//const axios = require('axios'); // legacy way
 
 function App() {
+  //   // Make a request for a user with a given ID
+  // axios.get('http://localhost:3000/api/products')
+  // .then(function (response) {
+  //   // handle success
+  //   console.log(response.data);
+  // })
+  // .catch(function (error) {
+  //   // handle error
+  //   console.log(error);
+  // })
+  // .finally(function () {
+  //   // always executed
+  // });
+
+  const [APIproducts, setAPIProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
+  // useEffect (()=>{
+  //     axios.get('http://localhost:3000/api/products')
+  //     .then((res) =>setAPIProducts(res.data))
+  //     .catch((err) => console.log(err.message));
+  //   },[]);
+
+  //   console.log(APIproducts);
+  // const [categories, setCategories] = useState([]);
+
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:3000/api/categories")
+  //     .then((res) => {
+  //       setCategories(res.data);
+  //     })
+  //     .catch((err) => console.log(err.message));
+  // }, []);
+
+  // console.log(categories);
+
   const [products, setProducts] = useState([
     {
       id: 1,
@@ -17,6 +55,8 @@ function App() {
       price: 10,
       result: 3 * 10,
       defaultPrice: 10,
+      numberInStock: 0,
+      category: { id: "999999", name: "tomate" },
     },
     {
       id: 2,
@@ -25,6 +65,8 @@ function App() {
       price: 20,
       result: 0,
       defaultPrice: 20,
+      numberInStock: 0,
+      category: { id: "999999", name: "tomate" },
     },
     {
       id: 3,
@@ -33,9 +75,47 @@ function App() {
       price: 90,
       result: 0,
       defaultPrice: 90,
+      numberInStock: 0,
+      category: { id: "999999", name: "tomate" },
     },
   ]);
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/products")
+      .then((res) => {
+        const updatedProducts = res.data.map(
+          (product: {
+            id: any;
+            name: any;
+            quantity: any;
+            price: any;
+            defaultPrice: any;
+            numberInStock: any;
+            category: any;
+          }) => ({
+            id: product.id,
+            name: product.name,
+            quantity: product.quantity ?? 0,
+            price: product.defaultPrice ?? 0,
+            result: (product.quantity ?? 0) * (product.price ?? 0),
+            defaultPrice: product.defaultPrice ?? product.price ?? 0,
+            numberInStock: product.numberInStock,
+            category: product.category,
+          })
+        );
+        setAPIProducts(updatedProducts);
+      })
+      .catch((err) => console.log(err.message));
+  }, []);
+
+  useEffect(() => {
+    if (APIproducts.length > 0) {
+      setProducts(APIproducts);
+    }
+  }, [APIproducts]);
+
+  //console.log(products);
   const [totalResult, setTotalResult] = useState(0);
 
   useEffect(() => {
@@ -112,10 +192,14 @@ function App() {
         price: product.defaultPrice,
         result: 0,
         defaultPrice: product.defaultPrice,
+        numberInStock: product.numberInStock,
+        //category: { id: product.category.id, name: product.category.name },
+        category: { id: "", name: "" },
+        //category: product.category,
       },
     ]);
-    console.log("product", product);
-    console.log("prodtcts", products);
+    //console.log("product", product);
+    //console.log("prodtcts", products);
   };
 
   const onUpdateProduct = (prop: Product) => {
@@ -134,8 +218,13 @@ function App() {
   };
 
   const onDeleteProduct = (prop: Product) => {
+    console.log('Deleting product:', prop)
+
     setProducts(products.filter((product) => product.id !== prop.id));
+    console.log('Updated products:', products);
   };
+  console.log("product", products);
+  
   return (
     <>
       <BrowserRouter>
@@ -159,19 +248,19 @@ function App() {
             <Route
               path="mangment"
               element={
-                <Mangment
-                  products={products}
-                  onIncPrice={(product) => onIncPrice(product)}
-                  onDecPrice={(product) => onDecPrice(product)}
-                  onAddProduct={(product: any) => onAddProduct(product)}
-                  onUpdateProduct={(product: any) => onUpdateProduct(product)}
-                  onDeleteProduct={(product: any) => onDeleteProduct(product)}
-                />
+                <>
+                  <Mangment
+                    products={products}
+                    onIncPrice={(product) => onIncPrice(product)}
+                    onDecPrice={(product) => onDecPrice(product)}
+                    onAddProduct={(product: any) => onAddProduct(product)}
+                    onUpdateProduct={(product: any) => onUpdateProduct(product)}
+                    onDeleteProduct={(product: any) => onDeleteProduct(product)}
+                  />
+                </>
               }
             />
-            <Route path='*' element={<NotFound></NotFound>}>
-
-            </Route>
+            <Route path="*" element={<NotFound></NotFound>}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
