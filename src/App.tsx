@@ -1,107 +1,30 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Calulator from "./Product/Calculation/Calulator.component";
-import { NewProduct, Product } from "./Product/ProductProp";
+import { Product } from "./Product/ProductProp";
 import Mangment from "./Product/Mangment/Mangment.component";
 import Navbar from "./Navbar/Navbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import NotFound from "./NotFound";
 import axios from "axios";
-//const axios = require('axios'); // legacy way
 
 function App() {
-  //   // Make a request for a user with a given ID
-  // axios.get('http://localhost:3000/api/products')
-  // .then(function (response) {
-  //   // handle success
-  //   console.log(response.data);
-  // })
-  // .catch(function (error) {
-  //   // handle error
-  //   console.log(error);
-  // })
-  // .finally(function () {
-  //   // always executed
-  // });
-
-  const [APIproducts, setAPIProducts] = useState([]);
-  // const [products, setProducts] = useState([]);
-  // useEffect (()=>{
-  //     axios.get('http://localhost:3000/api/products')
-  //     .then((res) =>setAPIProducts(res.data))
-  //     .catch((err) => console.log(err.message));
-  //   },[]);
-
-  //   console.log(APIproducts);
-  // const [categories, setCategories] = useState([]);
-
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:3000/api/categories")
-  //     .then((res) => {
-  //       setCategories(res.data);
-  //     })
-  //     .catch((err) => console.log(err.message));
-  // }, []);
-
-  // console.log(categories);
-
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Hara",
-      quantity: 3,
-      price: 10,
-      result: 3 * 10,
-      defaultPrice: 10,
-      numberInStock: 0,
-      category: { id: "999999", name: "tomate" },
-    },
-    {
-      id: 2,
-      name: "Tomato",
-      quantity: 8,
-      price: 20,
-      result: 0,
-      defaultPrice: 20,
-      numberInStock: 0,
-      category: { id: "999999", name: "tomate" },
-    },
-    {
-      id: 3,
-      name: "cofe",
-      quantity: 0,
-      price: 90,
-      result: 0,
-      defaultPrice: 90,
-      numberInStock: 0,
-      category: { id: "999999", name: "tomate" },
-    },
-  ]);
+  const [APIproducts, setAPIProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [totalResult, setTotalResult] = useState(0);
 
   useEffect(() => {
     axios
       .get("http://localhost:3000/api/products")
       .then((res) => {
         const updatedProducts = res.data.map(
-          (product: {
-            id: any;
-            name: any;
-            quantity: any;
-            price: any;
-            defaultPrice: any;
-            numberInStock: any;
-            category: any;
-          }) => ({
-            id: product.id,
-            name: product.name,
+          (product: Product) => ({
+            ...product,
             quantity: product.quantity ?? 0,
-            price: product.defaultPrice ?? 0,
+            price: product.defaultPrice ?? product.price ?? 0,
             result: (product.quantity ?? 0) * (product.price ?? 0),
             defaultPrice: product.defaultPrice ?? product.price ?? 0,
-            numberInStock: product.numberInStock,
-            category: product.category,
           })
         );
         setAPIProducts(updatedProducts);
@@ -115,67 +38,33 @@ function App() {
     }
   }, [APIproducts]);
 
-  //console.log(products);
-  const [totalResult, setTotalResult] = useState(0);
-
   useEffect(() => {
-    let calculatedTotal = products.reduce((acc, product) => {
-      return acc + product.result;
-    }, 0);
-
+    const calculatedTotal = products.reduce((acc, product) => acc + product.result, 0);
     setTotalResult(calculatedTotal);
   }, [products]);
 
-  const onIncQuantity = (productItem: Product) => {
+  const updateProductQuantity = (productItem: Product, increment: boolean) => {
     setProducts(
       products.map((product) =>
         product.name === productItem.name
           ? {
               ...product,
-              quantity: product.quantity + 1,
-              result: product.price * (product.quantity + 1),
-            }
-          : product
-      )
-    );
-  };
-  const onDecQuantity = (productItem: Product) => {
-    setProducts(
-      products.map((product) =>
-        product.name === productItem.name
-          ? {
-              ...product,
-              quantity: product.quantity - 1,
-              result: product.price * (product.quantity - 1),
-            }
-          : product
-      )
-    );
-  };
-  //price
-
-  const onIncPrice = (productItem: Product) => {
-    setProducts(
-      products.map((product) =>
-        product.name === productItem.name
-          ? {
-              ...product,
-              price: product.price + 1,
-              result: (product.price + 1) * product.quantity,
+              quantity: product.quantity + (increment ? 1 : -1),
+              result: product.price * (product.quantity + (increment ? 1 : -1)),
             }
           : product
       )
     );
   };
 
-  const onDecPrice = (productItem: Product) => {
+  const updateProductPrice = (productItem: Product, increment: boolean) => {
     setProducts(
       products.map((product) =>
         product.name === productItem.name
           ? {
               ...product,
-              price: product.price - 1,
-              result: (product.price - 1) * product.quantity,
+              price: product.price + (increment ? 1 : -1),
+              result: (product.price + (increment ? 1 : -1)) * product.quantity,
             }
           : product
       )
@@ -186,20 +75,13 @@ function App() {
     setProducts([
       ...products,
       {
+        ...product,
         id: products.length + 1,
-        name: product.name,
         quantity: 0,
-        price: product.defaultPrice,
         result: 0,
-        defaultPrice: product.defaultPrice,
-        numberInStock: product.numberInStock,
-        //category: { id: product.category.id, name: product.category.name },
         category: { id: "", name: "" },
-        //category: product.category,
       },
     ]);
-    //console.log("product", product);
-    //console.log("prodtcts", products);
   };
 
   const onUpdateProduct = (prop: Product) => {
@@ -218,68 +100,45 @@ function App() {
   };
 
   const onDeleteProduct = (prop: Product) => {
-    console.log('Deleting product:', prop)
-
-    setProducts(products.filter((product) => product.id !== prop.id));
-    console.log('Updated products:', products);
+    setProducts((prevProducts) => prevProducts.filter((product) => product.id !== prop.id));
   };
-  console.log("product", products);
-  
+
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navbar></Navbar>}>
-            <Route path="/" element={<Home></Home>} />
+          <Route path="/" element={<Navbar />}>
+            <Route path="/" element={<Home />} />
             <Route
               path="calculate"
               element={
                 <Calulator
                   products={products}
-                  onDecQuantity={(product) => onDecQuantity(product)}
-                  onIncPrice={(product) => onIncPrice(product)}
-                  onDecPrice={(product) => onDecPrice(product)}
-                  onIncQuantity={(product) => onIncQuantity(product)}
+                  onDecQuantity={(product) => updateProductQuantity(product, false)}
+                  onIncPrice={(product) => updateProductPrice(product, true)}
+                  onDecPrice={(product) => updateProductPrice(product, false)}
+                  onIncQuantity={(product) => updateProductQuantity(product, true)}
                   totalResult={totalResult}
                 />
               }
             />
-
             <Route
               path="mangment"
               element={
-                <>
-                  <Mangment
-                    products={products}
-                    onIncPrice={(product) => onIncPrice(product)}
-                    onDecPrice={(product) => onDecPrice(product)}
-                    onAddProduct={(product: any) => onAddProduct(product)}
-                    onUpdateProduct={(product: any) => onUpdateProduct(product)}
-                    onDeleteProduct={(product: any) => onDeleteProduct(product)}
-                  />
-                </>
+                <Mangment
+                  products={products}
+                  onIncPrice={(product) => updateProductPrice(product, true)}
+                  onDecPrice={(product) => updateProductPrice(product, false)}
+                  onAddProduct={(product: any) => onAddProduct(product)}
+                  onUpdateProduct={(product: any) => onUpdateProduct(product)}
+                  onDeleteProduct={(product: any) => onDeleteProduct(product)}
+                />
               }
             />
-            <Route path="*" element={<NotFound></NotFound>}></Route>
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      {/* {<Calulator
-        products={products}
-        onDecQuantity={(product)=>onDecQuantity(product)}
-        onIncPrice={(product)=>onIncPrice(product)}
-        onDecPrice={(product)=>onDecPrice(product)}
-        onIncQuantity={(product)=>onIncQuantity(product)}
-        totalResult={totalResult}
-      /> }
-      <Mangment
-        products={products}
-        onIncPrice={(product) => onIncPrice(product)}
-        onDecPrice={(product) => onDecPrice(product)}
-        onAddProduct={(product: any) => onAddProduct(product)}
-        onUpdateProduct={(product: any) => onUpdateProduct(product)}
-        onDeleteProduct={(product: any) => onDeleteProduct(product)}
-      /> */}
     </>
   );
 }
