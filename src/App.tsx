@@ -1,45 +1,49 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Calulator from "./Product/Calculation/Calulator.component";
-import { Product } from "./Product/ProductProp";
 import Mangment from "./Product/Mangment/Mangment.component";
 import Navbar from "./Navbar/Navbar";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import NotFound from "./NotFound";
-import axios from "axios";
+import { omit } from "lodash";
+import { CanceledError } from "./services/api-client";
+import productService, { Product } from "./services/product-service";
 
 function App() {
-  const [APIproducts, setAPIProducts] = useState<Product[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
   const [totalResult, setTotalResult] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/products")
+    setLoading(true);
+    const { request, cancel } = productService.getAll<Product>();
+    request
       .then((res) => {
-        const updatedProducts = res.data.map(
-          (product: Product) => ({
-            ...product,
-            quantity: product.quantity ?? 0,
-            price: product.defaultPrice ?? product.price ?? 0,
-            result: (product.quantity ?? 0) * (product.price ?? 0),
-            defaultPrice: product.defaultPrice ?? product.price ?? 0,
-          })
-        );
-        setAPIProducts(updatedProducts);
+        const updatedProducts = res.data.map((product: Product) => ({
+          ...product,
+          quantity: product.quantity ?? 0,
+          price: product.defaultPrice ?? product.price ?? 0,
+          result: (product.quantity ?? 0) * (product.price ?? 0),
+          //defaultPrice: product.defaultPrice ?? product.price ?? 0,
+        }));
+        setProducts(updatedProducts);
+        setLoading(false);
       })
-      .catch((err) => console.log(err.message));
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+        setLoading(false);
+      });
+    return () => cancel();
   }, []);
 
   useEffect(() => {
-    if (APIproducts.length > 0) {
-      setProducts(APIproducts);
-    }
-  }, [APIproducts]);
-
-  useEffect(() => {
-    const calculatedTotal = products.reduce((acc, product) => acc + product.result, 0);
+    const calculatedTotal = products.reduce(
+      (acc, product) => acc + product.result,
+      0
+    );
     setTotalResult(calculatedTotal);
   }, [products]);
 
@@ -71,36 +75,73 @@ function App() {
     );
   };
 
-  const onAddProduct = (product: Product) => {
-    setProducts([
-      ...products,
-      {
-        ...product,
-        id: products.length + 1,
-        quantity: 0,
-        result: 0,
-        category: { id: "", name: "" },
-      },
-    ]);
-  };
-
-  const onUpdateProduct = (prop: Product) => {
-    setProducts(
-      products.map((product) =>
-        product.id === prop.id
-          ? {
-              ...product,
-              name: prop.name,
-              price: prop.defaultPrice,
-              defaultPrice: prop.defaultPrice,
-            }
-          : product
+  const onAddProduct = async (product: Product) => {
+    const originalProducts = [...products];
+    const body = { ...product, categoryId: product.category._id };
+    const newProd = omit(body, "_id", "category","price","result","quantity");
+    productService
+      .create(newProd)
+      .then(({ data: savedProduct }) =>
+        setProducts([savedProduct, ...products])
       )
-    );
+      .catch((err) => {
+        // if (err instanceof CanceledError) return;
+        setError(err.message);
+        setProducts(originalProducts);
+      });
+
+    // setProducts([
+    //   ...products,
+    //   {
+    //     ...product,
+    //   },
+    // ]);
   };
 
-  const onDeleteProduct = (prop: Product) => {
-    setProducts((prevProducts) => prevProducts.filter((product) => product.id !== prop.id));
+  const onUpdateProduct = async (prop: Product) => {
+    const originalProducts = [...products];
+    const body = { ...prop, categoryId: prop.category._id };
+    const newProd = omit(body, "_id", "category","price","result","quantity");
+    productService
+      //.updateProduct(prop._id, omit(body, "_id", "category"))
+      .update(prop._id, newProd)
+      .then(({ data: updatedProduct }) =>
+        setProducts(
+          products.map((product) =>
+            product._id === prop._id ? updatedProduct : product
+          )
+        )
+      )
+      .catch((err) => {
+        // if (err instanceof CanceledError) return;
+        setError(err.message);
+        setProducts(originalProducts);
+      });
+
+    // setProducts(
+    //   products.map((product) =>
+    //     product._id === prop._id
+    //       ? {
+    //           ...product,
+    //           name: prop.name,
+    //           price: prop.defaultPrice,
+    //           defaultPrice: prop.defaultPrice,
+    //           category: prop.category,
+    //         }
+    //       : product
+    //   )
+    // );
+    // console.log(prop);
+  };
+
+  const onDeleteProduct = async (product: Product) => {
+    const originalProducts = [...products];
+    setProducts(products.filter((p) => p._id !== product._id));
+    productService.delete(product._id).catch((err) => {
+      if (err instanceof CanceledError) return;
+      setError(err.message);
+      setProducts(originalProducts);
+    });
   };
 
   return (
@@ -112,27 +153,38 @@ function App() {
             <Route
               path="calculate"
               element={
-                <Calulator
-                  products={products}
-                  onDecQuantity={(product) => updateProductQuantity(product, false)}
-                  onIncPrice={(product) => updateProductPrice(product, true)}
-                  onDecPrice={(product) => updateProductPrice(product, false)}
-                  onIncQuantity={(product) => updateProductQuantity(product, true)}
-                  totalResult={totalResult}
-                />
+                <>
+                  {error && <p className="text-danger">{error}</p>}
+                  {isLoading && <div className="spinner-border"></div>}
+                  <Calulator
+                    products={products}
+                    onDecQuantity={(product) =>
+                      updateProductQuantity(product, false)
+                    }
+                    onIncPrice={(product) => updateProductPrice(product, true)}
+                    onDecPrice={(product) => updateProductPrice(product, false)}
+                    onIncQuantity={(product) =>
+                      updateProductQuantity(product, true)
+                    }
+                    totalResult={totalResult}
+                  />
+                </>
               }
             />
             <Route
               path="mangment"
               element={
-                <Mangment
-                  products={products}
-                  onIncPrice={(product) => updateProductPrice(product, true)}
-                  onDecPrice={(product) => updateProductPrice(product, false)}
-                  onAddProduct={(product: any) => onAddProduct(product)}
-                  onUpdateProduct={(product: any) => onUpdateProduct(product)}
-                  onDeleteProduct={(product: any) => onDeleteProduct(product)}
-                />
+                <>
+                  {error && <p className="text-danger">{error}</p>}
+                  <Mangment
+                    products={products}
+                    onIncPrice={(product) => updateProductPrice(product, true)}
+                    onDecPrice={(product) => updateProductPrice(product, false)}
+                    onAddProduct={(product: any) => onAddProduct(product)}
+                    onUpdateProduct={(product: any) => onUpdateProduct(product)}
+                    onDeleteProduct={(product: any) => onDeleteProduct(product)}
+                  />
+                </>
               }
             />
             <Route path="*" element={<NotFound />} />

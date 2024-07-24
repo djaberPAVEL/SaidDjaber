@@ -1,5 +1,5 @@
 import IncDec from "./IncDec.comoponet";
-import {Product} from "../ProductProp";
+import productService , { Product } from "../../services/product-service";
 
 interface Props {
         products:Product []
