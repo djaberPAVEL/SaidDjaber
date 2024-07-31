@@ -5,6 +5,9 @@ import Modal from "react-bootstrap/Modal";
 
 import axios from "axios";
 import { NewProduct, Product } from "../../services/product-service";
+import useCategories from "../../hooks/useCategories";
+
+
 
 interface Prop {
   onCreate: (arg: Product) => void;
@@ -38,21 +41,20 @@ function ModelProduct({
     category: { _id: "", name: "riski" },
   });
 
-  const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
-    []
-  );
+     const {categories,isLoadingCategories,errorCategories,setCategories,setErrorCategories}= useCategories();
+
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // Add error state
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/categories")
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((err) => console.log(err.message));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:3000/api/categories")
+  //     .then((res) => {
+  //       setCategories(res.data);
+  //     })
+  //     .catch((err) => console.log(err.message));
+  // }, []);
 
   const handleCategoryChange = (
     event: React.ChangeEvent<HTMLSelectElement>

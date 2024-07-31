@@ -1,24 +1,73 @@
-import React from "react";
-import { NewProduct,Product } from "../../services/product-service";
+import { omit } from "lodash";
+import productService, { Product } from "../../services/product-service";
 import ModelProduct from "./ModalProduct";
+import useProducts from "../../hooks/useProducts";
+import { CanceledError } from "../../services/api-client";
 
-interface Props {
-  products: Product[];
-  onIncPrice: (arg: Product) => void;
-  onDecPrice: (arg: Product) => void;
-  onAddProduct: (arg: Product) => void;
-  onUpdateProduct: (arg: Product) => void;
-  onDeleteProduct: (arg: Product) => void;
-}
+function Mangment({}) {
+  const { products, isLoading, error, setError, setProducts } = useProducts();
+  //const {categories,isLoadingCategories,errorCategories,setCategories,setErrorCategories}= useCategories();
 
-function Mangment({
-  products,
-  onIncPrice,
-  onDecPrice,
-  onAddProduct,
-  onUpdateProduct,
-  onDeleteProduct,
-}: Props) {
+  const onAddProduct = async (product: Product) => {
+    const originalProducts = [...products];
+    const body = { ...product, categoryId: product.category._id };
+    const newProd = omit(
+      body,
+      "_id",
+      "category",
+      "price",
+      "result",
+      "quantity"
+    );
+    productService
+      .create(newProd)
+      .then(({ data: savedProduct }) =>
+        setProducts([savedProduct, ...products])
+      )
+      .catch((err) => {
+        // if (err instanceof CanceledError) return;
+        setError(err.message);
+        setProducts(originalProducts);
+      });
+  };
+
+  const onUpdateProduct = async (prop: Product) => {
+    const originalProducts = [...products];
+    const body = { ...prop, categoryId: prop.category._id };
+    const newProd = omit(
+      body,
+      "_id",
+      "category",
+      "price",
+      "result",
+      "quantity"
+    );
+    productService
+      //.updateProduct(prop._id, omit(body, "_id", "category"))
+      .update(prop._id, newProd)
+      .then(({ data: updatedProduct }) =>
+        setProducts(
+          products.map((product) =>
+            product._id === prop._id ? updatedProduct : product
+          )
+        )
+      )
+      .catch((err) => {
+        // if (err instanceof CanceledError) return;
+        setError(err.message);
+        setProducts(originalProducts);
+      });
+  };
+
+  const onDeleteProduct = async (product: Product) => {
+    const originalProducts = [...products];
+    setProducts(products.filter((p) => p._id !== product._id));
+    productService.delete(product._id).catch((err) => {
+      if (err instanceof CanceledError) return;
+      setError(err.message);
+      setProducts(originalProducts);
+    });
+  };
   return (
     <>
       <table className="table table-bordered border-primary">
