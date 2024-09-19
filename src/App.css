@@ -1,0 +1,25 @@
+.fit-content {
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .table-sm {
+    font-size: 0.875rem;
+  }
+  
+  .table-sm th, .table-sm td {
+    padding: 0.5rem;
+  }
+  
+  .text-sm {
+    font-size: 2rem;
+  }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f4f4f4;
+  }
+
+  
+
+  

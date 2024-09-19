@@ -1,10 +1,11 @@
 import React from "react";
+import { Menu, MenuItem, Sidebar, sidebarClasses } from "react-pro-sidebar";
 import { Link, Outlet } from "react-router-dom";
 
 function Navbar() {
   return (
     <div>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      {/* <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/">
             Navbar
@@ -38,6 +39,11 @@ function Navbar() {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to="/employees">
+                employees 
+                </Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link" to="/customers">
                 Customers 
                 </Link>
@@ -61,7 +67,33 @@ function Navbar() {
             </ul>
           </div>
         </div>
-      </nav>
+      </nav> */}
+      <aside >
+      <Sidebar
+        // rootStyles={{
+        //   [`.${sidebarClasses.rtl}`]: {
+            
+        //   },
+        // }}
+        rtl
+      >
+        <Menu
+          // menuItemStyles={{
+          //   button: ({ level, active, disabled }) => {
+          //     // only apply styles on first level elements of the tree
+          //     if (level === 0)
+          //       return {
+          //         color: disabled ? "#f5d9ff" : "#d359ff",
+          //         backgroundColor: active ? "#eecef9" : undefined,
+          //       };
+          //   },
+          // }}
+        >
+          <MenuItem component={<Link to="/employees" />}> employees</MenuItem>
+          <MenuItem component={<Link to="/calendar" />}> Calendar</MenuItem>
+          <MenuItem component={<Link to="/e-commerce" />}> E-commerce</MenuItem>
+        </Menu>
+      </Sidebar></aside>
       <Outlet />
     </div>
   );

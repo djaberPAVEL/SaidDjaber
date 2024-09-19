@@ -1,0 +1,47 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  .login-page {
+    background-color: #4F9153; /* updated background color to match sidebar */
+  }
+  
+  .login-logo {
+    width: 100px; /* adjust logo width as needed */
+    height: 100px; /* adjust logo height as needed */
+    margin: 20px auto; /* center logo horizontally */
+    background-image: url('src/assets/logo2.jpg');
+    background-size: cover;
+    border-radius: 50%; /* optional: add rounded corners to logo */
+  }
+  
+  .card {
+    border: none;
+    border-radius: 15px;
+    background-color: #fff; /* add white background to card */
+    padding: 20px; /* add padding to card */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* add subtle shadow to card */
+  }
+  
+  .qq {
+    color: #4F9153; /* update text color to white */
+    text-align: center; /* center heading text */
+  }
+  
+  button {
+    background-color: #4F9153; /* update button color to match sidebar */
+    border: none;
+    padding: 10px 20px; /* add padding to button */
+    border-radius: 5px; /* add rounded corners to button */
+    color: #fff; /* update button text color to white */
+    cursor: pointer; /* add pointer cursor on hover */
+  }
+  
+  button:hover {
+    background-color: #3E865F; /* update hover color to a darker shade of green */
+  }
+
+  .transparent-placeholder::placeholder {
+    opacity: 0.5; /* adjust the opacity value to your liking */
+  }
