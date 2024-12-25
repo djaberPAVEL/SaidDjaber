@@ -27,6 +27,8 @@ import { useDialogState } from "./hooks/useDialogState";
 import { BILL_DENOMINATIONS, BillDenominations } from "./constants/bills";
 import { themeColors } from "./theme/colors";
 import { useCart } from "./hooks/useCart";
+import { TotalDisplay } from './components/TotalDisplay';
+import ProductSection from './components/ProductSection';
 
 // POSCashierScreen is the main component for the cashier interface, handling product selection, cart management, and transaction processing.
 const POSCashierScreen: React.FC = () => {
@@ -385,6 +387,19 @@ const POSCashierScreen: React.FC = () => {
     setDiscount: handlers.cart.setDiscount
   };
 
+  // Merge state handlers for ProductSection
+  const productSectionHandlers = {
+    setSelectedCategory,
+    setSearchTerm
+  };
+
+  // Cart operations for ProductSection
+  const productSectionCartOps = {
+    addToCart,
+    updateQuantity: handlers.cart.updateQuantity,
+    removeFromCart
+  };
+
   return (
     <div
       className="flex flex-col lg:flex-row min-h-screen bg-gray-100 rtl overflow-hidden"
@@ -397,7 +412,6 @@ const POSCashierScreen: React.FC = () => {
         gutterSize={10}
         direction="horizontal"
       >
-        {/* Product Catalog Section */}
         <div className="w-full lg:w-[65%] h-screen flex flex-col">
           <Split
             className="flex flex-col w-full h-full"
@@ -406,155 +420,28 @@ const POSCashierScreen: React.FC = () => {
             gutterSize={10}
             direction="vertical"
           >
-            {/* Total Display Section */}
-            <div
-              className="w-full p-6 shadow-lg"
-              style={{
-                background: `linear-gradient(to left, ${themeColors.primary.base}, ${themeColors.primary.lighter})`,
+            <TotalDisplay
+              total={total}
+              customerCash={customerCash}
+              change={change}
+              colors={themeColors.primary}
+            />
+
+            <ProductSection
+              categories={categories}
+              selectedCategory={selectedCategory}
+              searchTerm={searchTerm}
+              stateHandlers={productSectionHandlers}
+              products={products}
+              cart={cart}
+              cartOperations={productSectionCartOps}
+              dialogHandlers={{
+                ...dialogHandlers,
+                onPrintReceipt: handlePrintReceipt,
+                onKeypadNumberClick: handleKeyPress,
+                onKeypadClear: handleClear
               }}
-            >
-              <div className="flex justify-between items-center">
-                <div
-                  className="text-8xl font-bold font-mono text-white"
-                  style={{ fontFamily: "Cairo, sans-serif" }}
-                >
-                  {total.toFixed(2)}
-                  <span className="text-4xl mr-2">دج</span>
-                </div>
-                <div
-                  className="flex flex-col text-white"
-                  style={{ fontFamily: "Cairo, sans-serif" }}
-                >
-                  <div className="text-2xl font-bold">
-                    <span>المبلغ المعطى: {customerCash} دج</span>
-                  </div>
-                  <div className="text-2xl font-bold mt-2">
-                    <span>المبلغ المتبقي: {change.toFixed(2)} دج</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Product Section */}
-            <div className="flex-1 bg-white shadow-md flex flex-col p-4 overflow-hidden">
-              {/* Categories */}
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-2 flex-shrink-0">
-                <button
-                  onClick={() => setSelectedCategory("")}
-                  className={`px-4 py-2 rounded ${
-                    !selectedCategory ? "text-white" : "bg-gray-200"
-                  }`}
-                  style={{
-                    backgroundColor: !selectedCategory
-                      ? themeColors.primary.base
-                      : undefined,
-                  }}
-                >
-                  الكل
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded ${
-                      selectedCategory === cat.id ? "text-white" : "bg-gray-200"
-                    }`}
-                    style={{
-                      backgroundColor:
-                        selectedCategory === cat.id
-                          ? themeColors.primary.base
-                          : undefined,
-                    }}
-                  >
-                    {cat.arabicName}
-                  </button>
-                ))}
-              </div>
-
-              {/* Search Bar */}
-              <div className="flex mb-4 flex-shrink-0">
-                <div className="relative flex-grow">
-                  <input
-                    type="text"
-                    placeholder="البحث عن المنتجات..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full p-2 pr-8 border rounded text-right"
-                  />
-                  <Search
-                    className="absolute right-2 top-3 text-gray-400"
-                    size={18}
-                  />
-                </div>
-              </div>
-
-              {/* Products Grid - Adjust height to fill remaining space */}
-              <div className="flex-1 overflow-hidden">
-                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 h-full overflow-y-auto p-2">
-                  {filteredProducts.map((product) => (
-                    <div key={product.id} className="flex flex-col">
-                      <div className="relative h-32 rounded-lg overflow-hidden border shadow-sm hover:shadow-md transition-shadow">
-                        {/* Product Image Container */}
-                        <div className="relative h-full">
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-
-                          {/* Product Info - Always Visible */}
-                          <div className="absolute bottom-0 right-0 p-2 text-white">
-                            <div className="text-lg font-bold">
-                              {product.arabicName}
-                            </div>
-                            <div className="text-sm">
-                              {product.price.toFixed(2)} دج
-                            </div>
-                          </div>
-
-                          {/* Stock Badge */}
-                          <div className="absolute top-1 left-1 text-xs bg-white text-gray-800 px-2 py-1 rounded-full">
-                            {product.stock} متبقي
-                          </div>
-
-                          {/* Info Button - Now with higher z-index */}
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setSelectedProduct(product);
-                              openProductDetails(product);
-                            }}
-                            className="absolute top-1 right-1 p-1.5 bg-white rounded-full hover:bg-gray-100 z-20"
-                          >
-                            <Info size={16} />
-                          </button>
-
-                          {/* Click Area for Adding to Cart - Lower z-index */}
-                          <button
-                            onClick={() => addToCart(product)}
-                            disabled={product.stock <= 0}
-                            className="absolute inset-0 z-10"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Cart Quantity Indicator */}
-                      {cart.find((item) => item.id === product.id) && (
-                        <div className="text-center text-sm py-1 px-2 bg-gray-100 rounded-full mt-1">
-                          {
-                            cart.find((item) => item.id === product.id)
-                              ?.quantity
-                          }{" "}
-                          في السلة
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            />
           </Split>
         </div>
 
