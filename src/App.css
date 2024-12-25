@@ -1,4 +1,9 @@
-.fit-content {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* .fit-content {
     line-height: 1;
     vertical-align: middle;
   }
@@ -18,7 +23,7 @@
   body {
     font-family: 'Cairo', sans-serif;
     background-color: #f4f4f4;
-  }
+  } */
 
   
 

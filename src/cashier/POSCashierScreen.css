@@ -1,0 +1,30 @@
+/* .pos-cashier-screen {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.product-list, .cart {
+  width: 45%;
+}
+
+.product-item, .cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.cart-item input {
+  width: 50px;
+}
+
+.total {
+  margin-top: 20px;
+  font-size: 1.2em;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+} */

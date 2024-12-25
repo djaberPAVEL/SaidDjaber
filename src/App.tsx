@@ -13,6 +13,7 @@ import Employees from "./employee/Employee";
 import MySidebar from "./Navbar/sidebar";
 import Dashboard from "./Navbar/Dashboard";
 import Sidebar from "./Navbar/sidebar_copy";
+import POSCashierScreen from "./cashier/POSCashierScreen";
 import Jobs from "./jobs/Jobs";
 import MainPage from "./MainPage/MainPage";
 import Login from "./Login";
@@ -128,7 +129,8 @@ function App() {
     <BrowserRouter>
       <div style={{ fontFamily: "Cairo, sans-serif" }}>
         <Routes>
-        <Route path="/" element={<Login />} />
+          <Route path="pos" element={<POSCashierScreen />} />
+          {/* <Route path="/" element={<Login />} /> */}
           <Route path="Login" element={<Login />} />
 
           <Route
@@ -136,7 +138,6 @@ function App() {
             element={
               <DashboardLayout>
                 <Routes>
-                  
                   <Route path="/MainPage" element={<MainPage />} />
                   <Route
                     path="calculate"

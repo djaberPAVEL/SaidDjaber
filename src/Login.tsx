@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
-import "./Login.css"; // Custom CSS file for further styling if needed
+//import "./Login.css"; // Custom CSS file for further styling if needed
 
 import { useNavigate } from "react-router-dom";
 const Login: React.FC = () => {

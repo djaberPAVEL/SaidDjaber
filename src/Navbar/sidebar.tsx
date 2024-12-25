@@ -172,6 +172,9 @@ const MySidebar: React.FC = () => {
         <MenuItem icon={<FaUser  />} component={<Link to="/employees" />}>
           الموظف
         </MenuItem>
+        {/* <MenuItem icon={<FaUser  />} component={<Link to="/pos" />}>
+          نقطة البيع
+        </MenuItem> */}
         <MenuItem icon={<FaBriefcase  />} component={<Link to="/jobs" />}>
           المنصب
         </MenuItem>
