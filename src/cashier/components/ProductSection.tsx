@@ -18,7 +18,7 @@ interface ProductSectionProps {
     updateQuantity: (productId: string, quantity: number) => void;
     removeFromCart: (productId: string) => void;
   };
-  dialogHandlers: DialogHandlers;
+  dialogHandlers: Pick<DialogHandlers, 'openProductDetails'>;
 }
 
 const ProductSection: React.FC<ProductSectionProps> = ({
@@ -96,7 +96,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
       )}
     </div>
   );
-
+  
   return (
     <div className="flex-1 bg-white shadow-md flex flex-col p-4 overflow-hidden">
       {/* Categories */}

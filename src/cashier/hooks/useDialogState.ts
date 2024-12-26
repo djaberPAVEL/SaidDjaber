@@ -98,11 +98,28 @@ export const useDialogState = () => {
     closeProductDetails,
     onToggleKeypad: () => {
       setDialogState(prev => ({ ...prev, showKeypad: !prev.showKeypad }));
+    },
+    onKeypadNumberClick: (value: string) => {
+      setDialogState(prev => ({
+        ...prev,
+        newPriceInput: prev.newPriceInput + value
+      }));
+    },
+    onKeypadClear: () => {
+      setDialogState(prev => ({
+        ...prev,
+        newPriceInput: ''
+      }));
+    },
+    onPrintReceipt: () => {
+      // Implement print receipt logic here
+      console.log('Printing receipt...');
     }
   };
 
   return {
     dialogState,
-    dialogHandlers
+    dialogHandlers,
+    setDialogState
   };
 };
